@@ -1,0 +1,121 @@
+<mujoco>
+  <worldbody>
+
+  <body name="triangle" pos="-0.30 0.50 0.50">
+  <freejoint/>
+  <inertial pos="0 0 0" mass="0.0040715040790523715" diaginertia="0.000013 0.000013 0.000017"/>
+    <!-- 具有真实物理特性的空心三角形 -->
+    <body name="triangle_frame" pos="0 0 0.0">
+      <!-- 物理参数 -->
+      <!-- 总质量: 0.0040715040790523715 kg -->
+      <!-- 边长: 0.16 m -->
+      <!-- 高度: 0.1386 m -->
+      <!-- 对角线惯性张量: 0.000013 0.000013 0.000017 -->
+      
+      <!-- 三角形边框 (100个球体) -->
+      <geom name="sphere_000" type="sphere" size="0.005" pos="0.000000 0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_001" type="sphere" size="0.005" pos="-0.002879 0.077286 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_002" type="sphere" size="0.005" pos="-0.005758 0.072300 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_003" type="sphere" size="0.005" pos="-0.008636 0.067314 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_004" type="sphere" size="0.005" pos="-0.011515 0.062328 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_005" type="sphere" size="0.005" pos="-0.014394 0.057341 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_006" type="sphere" size="0.005" pos="-0.017273 0.052355 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_007" type="sphere" size="0.005" pos="-0.020152 0.047369 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_008" type="sphere" size="0.005" pos="-0.023030 0.042383 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_009" type="sphere" size="0.005" pos="-0.025909 0.037397 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_010" type="sphere" size="0.005" pos="-0.028788 0.032410 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_011" type="sphere" size="0.005" pos="-0.031667 0.027424 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_012" type="sphere" size="0.005" pos="-0.034545 0.022438 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_013" type="sphere" size="0.005" pos="-0.037424 0.017452 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_014" type="sphere" size="0.005" pos="-0.040303 0.012466 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_015" type="sphere" size="0.005" pos="-0.043182 0.007479 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_016" type="sphere" size="0.005" pos="-0.046061 0.002493 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_017" type="sphere" size="0.005" pos="-0.048939 -0.002493 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_018" type="sphere" size="0.005" pos="-0.051818 -0.007479 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_019" type="sphere" size="0.005" pos="-0.054697 -0.012466 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_020" type="sphere" size="0.005" pos="-0.057576 -0.017452 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_021" type="sphere" size="0.005" pos="-0.060455 -0.022438 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_022" type="sphere" size="0.005" pos="-0.063333 -0.027424 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_023" type="sphere" size="0.005" pos="-0.066212 -0.032410 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_024" type="sphere" size="0.005" pos="-0.069091 -0.037397 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_025" type="sphere" size="0.005" pos="-0.071970 -0.042383 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_026" type="sphere" size="0.005" pos="-0.074848 -0.047369 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_027" type="sphere" size="0.005" pos="-0.077727 -0.052355 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_028" type="sphere" size="0.005" pos="-0.080606 -0.057341 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_029" type="sphere" size="0.005" pos="-0.083485 -0.062328 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_030" type="sphere" size="0.005" pos="-0.086364 -0.067314 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_031" type="sphere" size="0.005" pos="-0.089242 -0.072300 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_032" type="sphere" size="0.005" pos="-0.092121 -0.077286 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_033" type="sphere" size="0.005" pos="-0.095000 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_034" type="sphere" size="0.005" pos="-0.095000 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_035" type="sphere" size="0.005" pos="-0.089063 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_036" type="sphere" size="0.005" pos="-0.083125 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_037" type="sphere" size="0.005" pos="-0.077187 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_038" type="sphere" size="0.005" pos="-0.071250 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_039" type="sphere" size="0.005" pos="-0.065312 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_040" type="sphere" size="0.005" pos="-0.059375 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_041" type="sphere" size="0.005" pos="-0.053437 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_042" type="sphere" size="0.005" pos="-0.047500 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_043" type="sphere" size="0.005" pos="-0.041563 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_044" type="sphere" size="0.005" pos="-0.035625 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_045" type="sphere" size="0.005" pos="-0.029688 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_046" type="sphere" size="0.005" pos="-0.023750 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_047" type="sphere" size="0.005" pos="-0.017812 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_048" type="sphere" size="0.005" pos="-0.011875 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_049" type="sphere" size="0.005" pos="-0.005937 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_050" type="sphere" size="0.005" pos="0.000000 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_051" type="sphere" size="0.005" pos="0.005937 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_052" type="sphere" size="0.005" pos="0.011875 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_053" type="sphere" size="0.005" pos="0.017812 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_054" type="sphere" size="0.005" pos="0.023750 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_055" type="sphere" size="0.005" pos="0.029688 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_056" type="sphere" size="0.005" pos="0.035625 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_057" type="sphere" size="0.005" pos="0.041563 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_058" type="sphere" size="0.005" pos="0.047500 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_059" type="sphere" size="0.005" pos="0.053437 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_060" type="sphere" size="0.005" pos="0.059375 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_061" type="sphere" size="0.005" pos="0.065312 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_062" type="sphere" size="0.005" pos="0.071250 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_063" type="sphere" size="0.005" pos="0.077187 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_064" type="sphere" size="0.005" pos="0.083125 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_065" type="sphere" size="0.005" pos="0.089062 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_066" type="sphere" size="0.005" pos="0.095000 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_067" type="sphere" size="0.005" pos="0.095000 -0.082272 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_068" type="sphere" size="0.005" pos="0.092031 -0.077130 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_069" type="sphere" size="0.005" pos="0.089063 -0.071988 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_070" type="sphere" size="0.005" pos="0.086094 -0.066846 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_071" type="sphere" size="0.005" pos="0.083125 -0.061704 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_072" type="sphere" size="0.005" pos="0.080156 -0.056562 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_073" type="sphere" size="0.005" pos="0.077187 -0.051420 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_074" type="sphere" size="0.005" pos="0.074219 -0.046278 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_075" type="sphere" size="0.005" pos="0.071250 -0.041136 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_076" type="sphere" size="0.005" pos="0.068281 -0.035994 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_077" type="sphere" size="0.005" pos="0.065312 -0.030852 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_078" type="sphere" size="0.005" pos="0.062344 -0.025710 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_079" type="sphere" size="0.005" pos="0.059375 -0.020568 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_080" type="sphere" size="0.005" pos="0.056406 -0.015426 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_081" type="sphere" size="0.005" pos="0.053437 -0.010284 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_082" type="sphere" size="0.005" pos="0.050469 -0.005142 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_083" type="sphere" size="0.005" pos="0.047500 0.000000 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_084" type="sphere" size="0.005" pos="0.044531 0.005142 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_085" type="sphere" size="0.005" pos="0.041563 0.010284 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_086" type="sphere" size="0.005" pos="0.038594 0.015426 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_087" type="sphere" size="0.005" pos="0.035625 0.020568 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_088" type="sphere" size="0.005" pos="0.032656 0.025710 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_089" type="sphere" size="0.005" pos="0.029688 0.030852 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_090" type="sphere" size="0.005" pos="0.026719 0.035994 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_091" type="sphere" size="0.005" pos="0.023750 0.041136 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_092" type="sphere" size="0.005" pos="0.020781 0.046278 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_093" type="sphere" size="0.005" pos="0.017812 0.051420 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_094" type="sphere" size="0.005" pos="0.014844 0.056562 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_095" type="sphere" size="0.005" pos="0.011875 0.061704 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_096" type="sphere" size="0.005" pos="0.008906 0.066846 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_097" type="sphere" size="0.005" pos="0.005937 0.071988 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_098" type="sphere" size="0.005" pos="0.002969 0.077130 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="sphere_099" type="sphere" size="0.005" pos="0.000000 0.082272 0" rgba="0.89 0.59 0.22 1"/>
+    </body>
+    </body>
+
+  </worldbody>
+
+</mujoco>

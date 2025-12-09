@@ -143,3 +143,12 @@ def get_action_indices() -> dict:
         'eef_pos': (0, 3),
         'eef_quat': (3, 7),
     }
+
+
+if __name__ == "__main__":
+    # Example usage: create a mock dataset
+    create_mock_dataset(
+        zarr_path='mock_lasso_dataset.zarr',
+        num_episodes=5,
+        episode_length=50
+    )

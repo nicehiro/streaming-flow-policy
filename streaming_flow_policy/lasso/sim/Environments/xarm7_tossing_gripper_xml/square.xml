@@ -1,0 +1,127 @@
+<mujoco>
+  <worldbody>
+
+    <body name="square" pos="0.00 0.50 0.50">
+          <joint name="square_freejoint" type="free"/>
+
+      <!-- <freejoint/> -->
+      <!-- <inertial pos="0 0 0" mass="0.2" diaginertia="0.001 0.001 0.001"/> -->
+      <inertial pos="0 0 0" mass="0.1" diaginertia="0.000213 0.000213 0.000425"/>
+      <!-- <inertial pos="0 0 0" mass="0.1" inertial="0.000213 0.000213 0.000427 0.000000 0.000000 0.000000"/> -->
+    <!-- 由100个球体组成的空心正方形边框 -->
+    <body name="square_frame" pos="0 0 0.0">
+      <!-- 正方形边长: 0.16米 -->
+      <!-- 球体半径: 0.005米 -->
+      <!-- 每条边25个球体，4条边共100个球体 -->
+
+      <!-- bottom边 (25个球体) -->
+      <geom name="bottom_00" type="sphere" size="0.005" pos="-0.0800 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_01" type="sphere" size="0.005" pos="-0.0733 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_02" type="sphere" size="0.005" pos="-0.0667 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_03" type="sphere" size="0.005" pos="-0.0600 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_04" type="sphere" size="0.005" pos="-0.0533 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_05" type="sphere" size="0.005" pos="-0.0467 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_06" type="sphere" size="0.005" pos="-0.0400 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_07" type="sphere" size="0.005" pos="-0.0333 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_08" type="sphere" size="0.005" pos="-0.0267 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_09" type="sphere" size="0.005" pos="-0.0200 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_10" type="sphere" size="0.005" pos="-0.0133 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_11" type="sphere" size="0.005" pos="-0.0067 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_12" type="sphere" size="0.005" pos="0.0000 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_13" type="sphere" size="0.005" pos="0.0067 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_14" type="sphere" size="0.005" pos="0.0133 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_15" type="sphere" size="0.005" pos="0.0200 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_16" type="sphere" size="0.005" pos="0.0267 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_17" type="sphere" size="0.005" pos="0.0333 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_18" type="sphere" size="0.005" pos="0.0400 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_19" type="sphere" size="0.005" pos="0.0467 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_20" type="sphere" size="0.005" pos="0.0533 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_21" type="sphere" size="0.005" pos="0.0600 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_22" type="sphere" size="0.005" pos="0.0667 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_23" type="sphere" size="0.005" pos="0.0733 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="bottom_24" type="sphere" size="0.005" pos="0.0800 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+
+      <!-- right边 (25个球体) -->
+      <geom name="right_00" type="sphere" size="0.005" pos="0.0800 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_01" type="sphere" size="0.005" pos="0.0800 -0.0733 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_02" type="sphere" size="0.005" pos="0.0800 -0.0667 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_03" type="sphere" size="0.005" pos="0.0800 -0.0600 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_04" type="sphere" size="0.005" pos="0.0800 -0.0533 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_05" type="sphere" size="0.005" pos="0.0800 -0.0467 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_06" type="sphere" size="0.005" pos="0.0800 -0.0400 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_07" type="sphere" size="0.005" pos="0.0800 -0.0333 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_08" type="sphere" size="0.005" pos="0.0800 -0.0267 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_09" type="sphere" size="0.005" pos="0.0800 -0.0200 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_10" type="sphere" size="0.005" pos="0.0800 -0.0133 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_11" type="sphere" size="0.005" pos="0.0800 -0.0067 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_12" type="sphere" size="0.005" pos="0.0800 0.0000 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_13" type="sphere" size="0.005" pos="0.0800 0.0067 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_14" type="sphere" size="0.005" pos="0.0800 0.0133 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_15" type="sphere" size="0.005" pos="0.0800 0.0200 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_16" type="sphere" size="0.005" pos="0.0800 0.0267 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_17" type="sphere" size="0.005" pos="0.0800 0.0333 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_18" type="sphere" size="0.005" pos="0.0800 0.0400 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_19" type="sphere" size="0.005" pos="0.0800 0.0467 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_20" type="sphere" size="0.005" pos="0.0800 0.0533 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_21" type="sphere" size="0.005" pos="0.0800 0.0600 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_22" type="sphere" size="0.005" pos="0.0800 0.0667 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_23" type="sphere" size="0.005" pos="0.0800 0.0733 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="right_24" type="sphere" size="0.005" pos="0.0800 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+
+      <!-- top边 (25个球体) -->
+      <geom name="top_00" type="sphere" size="0.005" pos="0.0800 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_01" type="sphere" size="0.005" pos="0.0733 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_02" type="sphere" size="0.005" pos="0.0667 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_03" type="sphere" size="0.005" pos="0.0600 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_04" type="sphere" size="0.005" pos="0.0533 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_05" type="sphere" size="0.005" pos="0.0467 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_06" type="sphere" size="0.005" pos="0.0400 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_07" type="sphere" size="0.005" pos="0.0333 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_08" type="sphere" size="0.005" pos="0.0267 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_09" type="sphere" size="0.005" pos="0.0200 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_10" type="sphere" size="0.005" pos="0.0133 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_11" type="sphere" size="0.005" pos="0.0067 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_12" type="sphere" size="0.005" pos="0.0000 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_13" type="sphere" size="0.005" pos="-0.0067 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_14" type="sphere" size="0.005" pos="-0.0133 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_15" type="sphere" size="0.005" pos="-0.0200 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_16" type="sphere" size="0.005" pos="-0.0267 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_17" type="sphere" size="0.005" pos="-0.0333 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_18" type="sphere" size="0.005" pos="-0.0400 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_19" type="sphere" size="0.005" pos="-0.0467 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_20" type="sphere" size="0.005" pos="-0.0533 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_21" type="sphere" size="0.005" pos="-0.0600 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_22" type="sphere" size="0.005" pos="-0.0667 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_23" type="sphere" size="0.005" pos="-0.0733 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="top_24" type="sphere" size="0.005" pos="-0.0800 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+
+      <!-- left边 (25个球体) -->
+      <geom name="left_00" type="sphere" size="0.005" pos="-0.0800 0.0800 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_01" type="sphere" size="0.005" pos="-0.0800 0.0733 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_02" type="sphere" size="0.005" pos="-0.0800 0.0667 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_03" type="sphere" size="0.005" pos="-0.0800 0.0600 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_04" type="sphere" size="0.005" pos="-0.0800 0.0533 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_05" type="sphere" size="0.005" pos="-0.0800 0.0467 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_06" type="sphere" size="0.005" pos="-0.0800 0.0400 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_07" type="sphere" size="0.005" pos="-0.0800 0.0333 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_08" type="sphere" size="0.005" pos="-0.0800 0.0267 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_09" type="sphere" size="0.005" pos="-0.0800 0.0200 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_10" type="sphere" size="0.005" pos="-0.0800 0.0133 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_11" type="sphere" size="0.005" pos="-0.0800 0.0067 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_12" type="sphere" size="0.005" pos="-0.0800 0.0000 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_13" type="sphere" size="0.005" pos="-0.0800 -0.0067 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_14" type="sphere" size="0.005" pos="-0.0800 -0.0133 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_15" type="sphere" size="0.005" pos="-0.0800 -0.0200 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_16" type="sphere" size="0.005" pos="-0.0800 -0.0267 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_17" type="sphere" size="0.005" pos="-0.0800 -0.0333 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_18" type="sphere" size="0.005" pos="-0.0800 -0.0400 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_19" type="sphere" size="0.005" pos="-0.0800 -0.0467 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_20" type="sphere" size="0.005" pos="-0.0800 -0.0533 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_21" type="sphere" size="0.005" pos="-0.0800 -0.0600 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_22" type="sphere" size="0.005" pos="-0.0800 -0.0667 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_23" type="sphere" size="0.005" pos="-0.0800 -0.0733 0" rgba="0.89 0.59 0.22 1"/>
+      <geom name="left_24" type="sphere" size="0.005" pos="-0.0800 -0.0800 0" rgba="0.89 0.59 0.22 1"/>
+</body>
+    </body>
+  </worldbody>
+</mujoco>

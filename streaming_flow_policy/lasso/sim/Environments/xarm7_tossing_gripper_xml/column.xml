@@ -1,0 +1,24 @@
+<mujoco model="target_column">
+  <compiler angle="radian"/>
+    
+  <worldbody>
+    <!-- 柱子及其底座 - 序号1 -->
+    <body name="pillar1" pos="0.0 2.5  0.180">
+      <geom name="pillar1_geom" type="cylinder" size="0.045 0.180" rgba="0.6666 0.1803 0.1961 1"/>
+    </body>
+
+    <body name="pillar_base1" pos="0.0 2.5 0.02">
+      <geom name="pillar_base1_geom" type="box" size="0.15 0.15 0.02" rgba="0.6666 0.1803 0.1961 1" material="plastic"/>
+    </body>
+
+    <!-- 柱子及其底座 - 序号2 -->
+    <!-- <body name="pillar2" pos="1.92865 -0.01062  -0.22">
+      <geom name="pillar2_geom" type="cylinder" size="0.045 0.40" rgba="0.2 0.8 0.2 1"/>
+    </body>
+
+    <body name="pillar_base2" pos="1.92865 -0.01062 0.02">
+      <geom name="pillar_base2_geom" type="box" size="0.15 0.15 0.02" rgba="0.6666 0.1803 0.1961 1" material="plastic"/>
+    </body> -->
+
+  </worldbody>
+</mujoco>

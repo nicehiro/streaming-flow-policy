@@ -1,0 +1,509 @@
+<!-- 空心圆环主体 -->
+    <body name="ring" pos="0.20 0.40 0.50">
+      <freejoint/>
+      <inertial pos="0 0 0" mass="0.1" diaginertia="0.001 0.001 0.001"/>
+
+      <body name="center" pos="0 0 0">
+
+      <!-- 第0个球体 -->
+      <body name="sphere_0" pos="0.0800 0.0000 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body> 
+
+      <!-- 第1个球体 -->
+      <body name="sphere_1" pos="0.0798 0.0050 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第2个球体 -->
+      <body name="sphere_2" pos="0.0794 0.0100 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第3个球体 -->
+      <body name="sphere_3" pos="0.0786 0.0150 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第4个球体 -->
+      <body name="sphere_4" pos="0.0775 0.0199 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第5个球体 -->
+      <body name="sphere_5" pos="0.0761 0.0247 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第6个球体 -->
+      <body name="sphere_6" pos="0.0744 0.0294 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第7个球体 -->
+      <body name="sphere_7" pos="0.0724 0.0341 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第8个球体 -->
+      <body name="sphere_8" pos="0.0701 0.0385 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第9个球体 -->
+      <body name="sphere_9" pos="0.0675 0.0429 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第10个球体 -->
+      <body name="sphere_10" pos="0.0647 0.0470 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第11个球体 -->
+      <body name="sphere_11" pos="0.0616 0.0510 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第12个球体 -->
+      <body name="sphere_12" pos="0.0583 0.0548 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第13个球体 -->
+      <body name="sphere_13" pos="0.0548 0.0583 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第14个球体 -->
+      <body name="sphere_14" pos="0.0510 0.0616 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第15个球体 -->
+      <body name="sphere_15" pos="0.0470 0.0647 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第16个球体 -->
+      <body name="sphere_16" pos="0.0429 0.0675 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第17个球体 -->
+      <body name="sphere_17" pos="0.0385 0.0701 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第18个球体 -->
+      <body name="sphere_18" pos="0.0341 0.0724 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第19个球体 -->
+      <body name="sphere_19" pos="0.0294 0.0744 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第20个球体 -->
+      <body name="sphere_20" pos="0.0247 0.0761 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第21个球体 -->
+      <body name="sphere_21" pos="0.0199 0.0775 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第22个球体 -->
+      <body name="sphere_22" pos="0.0150 0.0786 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第23个球体 -->
+      <body name="sphere_23" pos="0.0100 0.0794 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第24个球体 -->
+      <body name="sphere_24" pos="0.0050 0.0798 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第25个球体 -->
+      <body name="sphere_25" pos="0.0000 0.0800 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第26个球体 -->
+      <body name="sphere_26" pos="-0.0050 0.0798 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第27个球体 -->
+      <body name="sphere_27" pos="-0.0100 0.0794 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第28个球体 -->
+      <body name="sphere_28" pos="-0.0150 0.0786 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第29个球体 -->
+      <body name="sphere_29" pos="-0.0199 0.0775 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第30个球体 -->
+      <body name="sphere_30" pos="-0.0247 0.0761 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第31个球体 -->
+      <body name="sphere_31" pos="-0.0294 0.0744 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第32个球体 -->
+      <body name="sphere_32" pos="-0.0341 0.0724 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第33个球体 -->
+      <body name="sphere_33" pos="-0.0385 0.0701 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第34个球体 -->
+      <body name="sphere_34" pos="-0.0429 0.0675 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第35个球体 -->
+      <body name="sphere_35" pos="-0.0470 0.0647 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第36个球体 -->
+      <body name="sphere_36" pos="-0.0510 0.0616 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第37个球体 -->
+      <body name="sphere_37" pos="-0.0548 0.0583 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第38个球体 -->
+      <body name="sphere_38" pos="-0.0583 0.0548 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第39个球体 -->
+      <body name="sphere_39" pos="-0.0616 0.0510 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第40个球体 -->
+      <body name="sphere_40" pos="-0.0647 0.0470 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第41个球体 -->
+      <body name="sphere_41" pos="-0.0675 0.0429 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第42个球体 -->
+      <body name="sphere_42" pos="-0.0701 0.0385 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第43个球体 -->
+      <body name="sphere_43" pos="-0.0724 0.0341 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第44个球体 -->
+      <body name="sphere_44" pos="-0.0744 0.0294 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第45个球体 -->
+      <body name="sphere_45" pos="-0.0761 0.0247 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第46个球体 -->
+      <body name="sphere_46" pos="-0.0775 0.0199 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第47个球体 -->
+      <body name="sphere_47" pos="-0.0786 0.0150 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第48个球体 -->
+      <body name="sphere_48" pos="-0.0794 0.0100 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第49个球体 -->
+      <body name="sphere_49" pos="-0.0798 0.0050 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第50个球体 -->
+      <body name="sphere_50" pos="-0.0800 0.0000 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第51个球体 -->
+      <body name="sphere_51" pos="-0.0798 -0.0050 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第52个球体 -->
+      <body name="sphere_52" pos="-0.0794 -0.0100 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第53个球体 -->
+      <body name="sphere_53" pos="-0.0786 -0.0150 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第54个球体 -->
+      <body name="sphere_54" pos="-0.0775 -0.0199 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第55个球体 -->
+      <body name="sphere_55" pos="-0.0761 -0.0247 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第56个球体 -->
+      <body name="sphere_56" pos="-0.0744 -0.0294 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第57个球体 -->
+      <body name="sphere_57" pos="-0.0724 -0.0341 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第58个球体 -->
+      <body name="sphere_58" pos="-0.0701 -0.0385 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第59个球体 -->
+      <body name="sphere_59" pos="-0.0675 -0.0429 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第60个球体 -->
+      <body name="sphere_60" pos="-0.0647 -0.0470 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第61个球体 -->
+      <body name="sphere_61" pos="-0.0616 -0.0510 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第62个球体 -->
+      <body name="sphere_62" pos="-0.0583 -0.0548 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第63个球体 -->
+      <body name="sphere_63" pos="-0.0548 -0.0583 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第64个球体 -->
+      <body name="sphere_64" pos="-0.0510 -0.0616 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第65个球体 -->
+      <body name="sphere_65" pos="-0.0470 -0.0647 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第66个球体 -->
+      <body name="sphere_66" pos="-0.0429 -0.0675 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第67个球体 -->
+      <body name="sphere_67" pos="-0.0385 -0.0701 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第68个球体 -->
+      <body name="sphere_68" pos="-0.0341 -0.0724 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第69个球体 -->
+      <body name="sphere_69" pos="-0.0294 -0.0744 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第70个球体 -->
+      <body name="sphere_70" pos="-0.0247 -0.0761 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第71个球体 -->
+      <body name="sphere_71" pos="-0.0199 -0.0775 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第72个球体 -->
+      <body name="sphere_72" pos="-0.0150 -0.0786 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第73个球体 -->
+      <body name="sphere_73" pos="-0.0100 -0.0794 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第74个球体 -->
+      <body name="sphere_74" pos="-0.0050 -0.0798 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第75个球体 -->
+      <body name="sphere_75" pos="-0.0000 -0.0800 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第76个球体 -->
+      <body name="sphere_76" pos="0.0050 -0.0798 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第77个球体 -->
+      <body name="sphere_77" pos="0.0100 -0.0794 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第78个球体 -->
+      <body name="sphere_78" pos="0.0150 -0.0786 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第79个球体 -->
+      <body name="sphere_79" pos="0.0199 -0.0775 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第80个球体 -->
+      <body name="sphere_80" pos="0.0247 -0.0761 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第81个球体 -->
+      <body name="sphere_81" pos="0.0294 -0.0744 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第82个球体 -->
+      <body name="sphere_82" pos="0.0341 -0.0724 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第83个球体 -->
+      <body name="sphere_83" pos="0.0385 -0.0701 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第84个球体 -->
+      <body name="sphere_84" pos="0.0429 -0.0675 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第85个球体 -->
+      <body name="sphere_85" pos="0.0470 -0.0647 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第86个球体 -->
+      <body name="sphere_86" pos="0.0510 -0.0616 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第87个球体 -->
+      <body name="sphere_87" pos="0.0548 -0.0583 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第88个球体 -->
+      <body name="sphere_88" pos="0.0583 -0.0548 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第89个球体 -->
+      <body name="sphere_89" pos="0.0616 -0.0510 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第90个球体 -->
+      <body name="sphere_90" pos="0.0647 -0.0470 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第91个球体 -->
+      <body name="sphere_91" pos="0.0675 -0.0429 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第92个球体 -->
+      <body name="sphere_92" pos="0.0701 -0.0385 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第93个球体 -->
+      <body name="sphere_93" pos="0.0724 -0.0341 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第94个球体 -->
+      <body name="sphere_94" pos="0.0744 -0.0294 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第95个球体 -->
+      <body name="sphere_95" pos="0.0761 -0.0247 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第96个球体 -->
+      <body name="sphere_96" pos="0.0775 -0.0199 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第97个球体 -->
+      <body name="sphere_97" pos="0.0786 -0.0150 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第98个球体 -->
+      <body name="sphere_98" pos="0.0794 -0.0100 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body>
+
+      <!-- 第99个球体 -->
+      <body name="sphere_99" pos="0.0798 -0.0050 0">
+        <geom type="sphere" size="0.005" rgba="0.89 0.59 0.22 1"/>
+      </body> 
+
+      </body>
+    </body>

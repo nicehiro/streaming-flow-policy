@@ -23,10 +23,11 @@ dependencies = [
     # =========================================================================
     "mediapy",
     "opencv-python",
-    "drake",
+    # "drake",
     "matplotlib",
     "termcolor",
     "scipy",
+    "numpy<2.0",  # Required for drake 1.26.0 compatibility (glibc 2.31)
     "scikit-image",
     "scikit-video",
     "torch",
@@ -40,6 +41,7 @@ dependencies = [
     "gdown",
     "gym",
     "shapely",
+    "plotly",
 ]
 requires-python = ">=3.10,<3.12"
 readme = "README.md"
