@@ -5,8 +5,10 @@ Replays recorded motion data from JSON files with configurable control mode and 
 """
 
 import os
+
 cpath = os.path.dirname(os.path.abspath(__file__))
 import numpy as np
+
 np.set_printoptions(precision=5, suppress=True, linewidth=200)
 import mujoco
 import mujoco.viewer
@@ -25,9 +27,23 @@ class ReplayMotion(Mj_Env):
     Replays recorded robot motion and object trajectories from JSON data files.
     """
 
-    def __init__(self, path=None, data_path=None, ctrl_mode='ctrl', speed_factor=1.0,
-                 save_video=False, output_path=None, video_fps=50, video_width=1920, video_height=1080,
-                 trace_duration=1.0, trace_count=10):
+    def __init__(
+        self,
+        path=None,
+        data_path=None,
+        ctrl_mode="ctrl",
+        speed_factor=1.0,
+        save_video=False,
+        output_path=None,
+        video_fps=50,
+        video_width=1920,
+        video_height=1080,
+        arm_trace_distance=0.05,
+        arm_trace_count=10,
+        object_trace_distance=0.05,
+        object_trace_count=10,
+        trace_start_delay=0.0,
+    ):
         """
         Initialize the ReplayMotion environment.
 
@@ -41,12 +57,14 @@ class ReplayMotion(Mj_Env):
             video_fps: Frames per second for output video
             video_width: Video width in pixels
             video_height: Video height in pixels
-            trace_duration: Duration in seconds to record motion traces (default: 1.0)
-            trace_count: Number of trace snapshots to capture (default: 10)
+            arm_trace_distance: Min EEF distance in meters between arm traces (default: 0.05)
+            arm_trace_count: Max arm trace snapshots (default: 10)
+            object_trace_distance: Min object distance in meters between object traces (default: 0.05)
+            object_trace_count: Max object trace snapshots (default: 10)
+            trace_start_delay: Time in seconds to wait before starting trace recording (default: 0.0)
         """
         # Store save_video before calling super().__init__ so _set_viewer can access it
         self.save_video = save_video
-
 
         super(ReplayMotion, self).__init__(path=path)
 
@@ -61,16 +79,26 @@ class ReplayMotion(Mj_Env):
         self.video_renderer = None
         self.video_camera = None
 
-        # Motion trace configuration
-        self.trace_duration = trace_duration
-        self.trace_count = trace_count
-        self.trace_interval = trace_duration / trace_count if trace_count > 0 else 0
-        self.trace_snapshots = []
-        self.trace_timestamps = []
-        self.trace_last_sample_time = -self.trace_interval  # Ensure first sample at t=0
-        self.trace_recording_complete = False
-        self.trace_body_ids = []
-        self.trace_geom_map = {}
+        # Arm trace configuration (EEF-based, space-based sampling)
+        self.arm_trace_distance = arm_trace_distance
+        self.arm_trace_count = arm_trace_count
+        self.arm_trace_snapshots = []
+        self.arm_trace_last_pos = None
+        self.arm_trace_complete = False
+        self.arm_trace_body_ids = []
+        self.arm_trace_geom_map = {}
+
+        # Object trace configuration (object position-based, space-based sampling)
+        self.object_trace_distance = object_trace_distance
+        self.object_trace_count = object_trace_count
+        self.object_trace_snapshots = []
+        self.object_trace_last_pos = None
+        self.object_trace_complete = False
+        self.object_trace_body_ids = []
+        self.object_trace_geom_map = {}
+
+        # Trace start delay (wait before recording traces)
+        self.trace_start_delay = trace_start_delay
 
         self._get_ids()
 
@@ -97,52 +125,110 @@ class ReplayMotion(Mj_Env):
 
     def _get_ids(self):
         """Get MuJoCo body/joint IDs for robot and objects."""
-        # Robot joint IDs (7 DOF arm + gripper)
+        # Robot joint IDs (7 DOF arm)
         self.joint_ids = [
-            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, f'left_joint{i + 1}')
+            mujoco.mj_name2id(
+                self.model, mujoco.mjtObj.mjOBJ_JOINT, f"left_joint{i + 1}"
+            )
             for i in range(7)
         ]
-        self.joint_ids.append(
-            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, 'left_gripper_act')
-        )
         print(f"Joint IDs: {self.joint_ids}")
+
+        # Gripper actuator ID (controls gripper via tendon)
+        self.gripper_actuator_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_ACTUATOR, "left_gripper_act"
+        )
+        print(f"Gripper actuator ID: {self.gripper_actuator_id}")
+
+        # Gripper joint names and their qpos addresses for direct kinematic control
+        # The Robotiq 2F85 uses a complex linkage system - we need to set all joints
+        gripper_joint_names = [
+            # Driver joints (main control, range 0-0.8)
+            "left_right_driver_joint",
+            "left_left_driver_joint",
+            # Coupler joints (coupled to drivers via constraints, range -1.57 to 0)
+            "left_right_coupler_joint",
+            "left_left_coupler_joint",
+            # Spring link joints (range -0.297 to 0.8)
+            "left_right_spring_link_joint",
+            "left_left_spring_link_joint",
+            # Follower joints (range -0.873 to 0.873)
+            "left_right_follower_joint",
+            "left_left_follower_joint",
+        ]
+        self.gripper_joint_ids = [
+            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_JOINT, name)
+            for name in gripper_joint_names
+        ]
+        self.gripper_joint_qpos_addrs = [
+            self.model.jnt_qposadr[jid] for jid in self.gripper_joint_ids
+        ]
+        print(f"Gripper joint IDs: {self.gripper_joint_ids}")
+        print(f"Gripper joint qpos addresses: {self.gripper_joint_qpos_addrs}")
 
         # Robot link IDs
         self.link_ids = [
-            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, f'left_link{i + 1}')
+            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, f"left_link{i + 1}")
             for i in range(7)
         ]
         self.link_ids.append(
-            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'left_end_effector')
+            mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, "left_end_effector")
         )
         print(f"Link IDs: {self.link_ids}")
 
+        # End effector body ID for trace distance calculation
+        self.eef_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "left_end_effector"
+        )
+
         # Object body IDs and joint addresses (for free bodies)
-        self.circle_body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'circle2')
-        self.circle_center_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'circle2_center')
-        self.square_body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'square')
-        self.triangle_body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'triangle')
+        self.circle_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "circle2"
+        )
+        self.circle_center_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "circle2_center"
+        )
+        self.square_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "square"
+        )
+        self.triangle_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "triangle"
+        )
 
         # Get qpos addresses for free bodies (to hide them by moving position)
         # Use body_jntadr to get joint index, then jnt_qposadr for qpos address
-        self.circle_qpos_addr = self.model.jnt_qposadr[self.model.body_jntadr[self.circle_body_id]]
-        self.square_qpos_addr = self.model.jnt_qposadr[self.model.body_jntadr[self.square_body_id]]
-        self.triangle_qpos_addr = self.model.jnt_qposadr[self.model.body_jntadr[self.triangle_body_id]]
-        print(f"Object Body IDs - Circle: {self.circle_body_id}, Square: {self.square_body_id}, Triangle: {self.triangle_body_id}")
+        self.circle_qpos_addr = self.model.jnt_qposadr[
+            self.model.body_jntadr[self.circle_body_id]
+        ]
+        self.square_qpos_addr = self.model.jnt_qposadr[
+            self.model.body_jntadr[self.square_body_id]
+        ]
+        self.triangle_qpos_addr = self.model.jnt_qposadr[
+            self.model.body_jntadr[self.triangle_body_id]
+        ]
+        print(
+            f"Object Body IDs - Circle: {self.circle_body_id}, Square: {self.square_body_id}, Triangle: {self.triangle_body_id}"
+        )
 
         # Target column body IDs
-        self.pillar_body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'pillar1')
-        self.pillar_base_body_id = mujoco.mj_name2id(self.model, mujoco.mjtObj.mjOBJ_BODY, 'pillar_base1')
-        print(f"Target Column IDs - Pillar: {self.pillar_body_id}, Base: {self.pillar_base_body_id}")
+        self.pillar_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "pillar1"
+        )
+        self.pillar_base_body_id = mujoco.mj_name2id(
+            self.model, mujoco.mjtObj.mjOBJ_BODY, "pillar_base1"
+        )
+        print(
+            f"Target Column IDs - Pillar: {self.pillar_body_id}, Base: {self.pillar_base_body_id}"
+        )
 
     def _set_default_camera(self):
         """Set default camera settings for both interactive viewer and video recording."""
         # Default camera settings to capture full experiment (robot arm + target column)
         self.default_camera_params = {
-            'lookat': np.array([-1, 1, 0.6]),
-            'distance': 3.3,
-            'azimuth': 130,
-            'elevation': -30
+            "lookat": np.array([-1, 1, 0.6]),
+            "distance": 3.3,
+            "azimuth": 130,
+            "elevation": -30,
         }
 
         # Apply to interactive viewer
@@ -158,26 +244,26 @@ class ReplayMotion(Mj_Env):
         """
         print(f"Loading data from: {data_path}")
 
-        with open(data_path, 'r') as f:
+        with open(data_path, "r") as f:
             self.recorded_data = json.load(f)
 
         # Extract metadata
-        self.object_encoding = self.recorded_data['object']
-        self.target = self.recorded_data['target']
-        self.release_time = self.recorded_data['release_time']
-        self.episodes = self.recorded_data['episodes']
+        self.object_encoding = self.recorded_data["object"]
+        self.target = self.recorded_data["target"]
+        self.release_time = self.recorded_data["release_time"]
+        self.episodes = self.recorded_data["episodes"]
         self.num_timesteps = len(self.episodes)
 
         # Determine object type from one-hot encoding
-        # [1,0,0] = square, [0,1,0] = circle, [0,0,1] = triangle
+        # [1,0,0] = cirle, [0,1,0] = square, [0,0,1] = triangle
         if self.object_encoding[0] == 1:
-            self.object_type = 'square'
-            self.object_body_id = self.square_body_id
-        elif self.object_encoding[1] == 1:
-            self.object_type = 'circle'
+            self.object_type = "circle"
             self.object_body_id = self.circle_body_id
+        elif self.object_encoding[1] == 1:
+            self.object_type = "square"
+            self.object_body_id = self.square_body_id
         elif self.object_encoding[2] == 1:
-            self.object_type = 'triangle'
+            self.object_type = "triangle"
             self.object_body_id = self.triangle_body_id
 
         print(f"Loaded {self.num_timesteps} timesteps")
@@ -198,13 +284,21 @@ class ReplayMotion(Mj_Env):
 
         target_pos = np.array(self.target)
         pillar_height = 0.180  # Half-height of the pillar cylinder
-        base_height = 0.02    # Half-height of the base box
+        base_height = 0.02  # Half-height of the base box
 
         # Set pillar position (target x, y, with z = pillar_height)
-        self.model.body_pos[self.pillar_body_id] = [target_pos[0], target_pos[1], pillar_height]
+        self.model.body_pos[self.pillar_body_id] = [
+            target_pos[0],
+            target_pos[1],
+            pillar_height,
+        ]
 
         # Set pillar base position (target x, y, with z = base_height)
-        self.model.body_pos[self.pillar_base_body_id] = [target_pos[0], target_pos[1], base_height]
+        self.model.body_pos[self.pillar_base_body_id] = [
+            target_pos[0],
+            target_pos[1],
+            base_height,
+        ]
 
         print(f"Target column moved to: ({target_pos[0]:.3f}, {target_pos[1]:.3f})")
 
@@ -213,12 +307,18 @@ class ReplayMotion(Mj_Env):
         hidden_pos = [0, 0, -10]  # Move far below the scene
 
         # For free bodies, we need to modify data.qpos (first 3 values are x,y,z position)
-        if self.object_type != 'circle' and self.circle_body_id >= 0:
-            self.data.qpos[self.circle_qpos_addr:self.circle_qpos_addr+3] = hidden_pos
-        if self.object_type != 'square' and self.square_body_id >= 0:
-            self.data.qpos[self.square_qpos_addr:self.square_qpos_addr+3] = hidden_pos
-        if self.object_type != 'triangle' and self.triangle_body_id >= 0:
-            self.data.qpos[self.triangle_qpos_addr:self.triangle_qpos_addr+3] = hidden_pos
+        if self.object_type != "circle" and self.circle_body_id >= 0:
+            self.data.qpos[self.circle_qpos_addr : self.circle_qpos_addr + 3] = (
+                hidden_pos
+            )
+        if self.object_type != "square" and self.square_body_id >= 0:
+            self.data.qpos[self.square_qpos_addr : self.square_qpos_addr + 3] = (
+                hidden_pos
+            )
+        if self.object_type != "triangle" and self.triangle_body_id >= 0:
+            self.data.qpos[self.triangle_qpos_addr : self.triangle_qpos_addr + 3] = (
+                hidden_pos
+            )
 
         mujoco.mj_forward(self.model, self.data)  # Update positions
         print(f"Hidden unused objects (keeping {self.object_type})")
@@ -226,56 +326,149 @@ class ReplayMotion(Mj_Env):
     def _init_replay_trace(self):
         """
         Initialize motion trace for replay visualization.
-        Sets up body IDs to trace (arm links + throwing object) and geom mapping.
+        Sets up separate arm and object tracing with independent distance thresholds.
+        - Arm traces: based on EEF position, blue→green gradient
+        - Object traces: based on object position, solid orange
         """
-        # Reset trace state
-        self.trace_snapshots = []
-        self.trace_timestamps = []
-        self.trace_last_sample_time = -self.trace_interval
-        self.trace_recording_complete = False
+        # Reset arm trace state
+        self.arm_trace_snapshots = []
+        self.arm_trace_last_pos = None
+        self.arm_trace_complete = False
 
-        # Collect body IDs to trace: arm links (excluding end effector) + object + object children
-        self.trace_body_ids = list(self.link_ids[:-1])  # 7 arm links, exclude end effector
-        if self.object_body_id is not None:
-            self.trace_body_ids.append(self.object_body_id)
-            # Also add child bodies of the object (geometries may be on child bodies)
+        # Reset object trace state
+        self.object_trace_snapshots = []
+        self.object_trace_last_pos = None
+        self.object_trace_complete = False
+
+        # Arm body IDs to trace (7 arm links + gripper, exclude end effector sphere)
+        # Start with the 7 arm links
+        self.arm_trace_body_ids = list(self.link_ids[:-1])
+
+        # Add gripper bodies (all descendants of left_link7, excluding end effector)
+        # left_link7 is the last item in link_ids[:-1], i.e., link_ids[-2]
+        link7_body_id = self.link_ids[-2]  # left_link7
+        end_effector_id = self.link_ids[-1]  # left_end_effector (to exclude)
+
+        # BFS to find all descendants of link7 (gripper bodies)
+        to_visit = []
+        for body_id in range(self.model.nbody):
+            if self.model.body_parentid[body_id] == link7_body_id:
+                to_visit.append(body_id)
+
+        while to_visit:
+            current_body = to_visit.pop(0)
+            # Skip the end effector (it's just a transparent sphere marker)
+            if current_body == end_effector_id:
+                continue
+            self.arm_trace_body_ids.append(current_body)
+            # Find all direct children of current body
             for body_id in range(self.model.nbody):
-                if self.model.body_parentid[body_id] == self.object_body_id:
-                    self.trace_body_ids.append(body_id)
+                if self.model.body_parentid[body_id] == current_body:
+                    to_visit.append(body_id)
 
-        # Build geom-to-body mapping
-        self.trace_geom_map = {body_id: [] for body_id in self.trace_body_ids}
+        # Object body IDs to trace (recursively find all descendants)
+        self.object_trace_body_ids = []
+        if self.object_body_id is not None:
+            # Use BFS to find all descendants (object may have nested child bodies with geoms)
+            to_visit = [self.object_body_id]
+            while to_visit:
+                current_body = to_visit.pop(0)
+                self.object_trace_body_ids.append(current_body)
+                # Find all direct children of current body
+                for body_id in range(self.model.nbody):
+                    if self.model.body_parentid[body_id] == current_body:
+                        to_visit.append(body_id)
+
+        # Build geom-to-body mapping for arm
+        self.arm_trace_geom_map = {body_id: [] for body_id in self.arm_trace_body_ids}
         for gid in range(self.model.ngeom):
             body_id = self.model.geom_bodyid[gid]
-            if body_id in self.trace_geom_map:
-                self.trace_geom_map[body_id].append(gid)
+            if body_id in self.arm_trace_geom_map:
+                self.arm_trace_geom_map[body_id].append(gid)
 
-        print(f"Motion trace initialized: {self.trace_count} snapshots over {self.trace_duration}s")
-        print(f"Tracing {len(self.trace_body_ids)} bodies ({len(self.link_ids)} arm links + object)")
+        # Build geom-to-body mapping for object
+        self.object_trace_geom_map = {
+            body_id: [] for body_id in self.object_trace_body_ids
+        }
+        for gid in range(self.model.ngeom):
+            body_id = self.model.geom_bodyid[gid]
+            if body_id in self.object_trace_geom_map:
+                self.object_trace_geom_map[body_id].append(gid)
 
-    def _record_trace_snapshot(self, sim_time):
+        print(
+            f"Arm trace: max {self.arm_trace_count} snapshots, distance {self.arm_trace_distance}m"
+        )
+        print(
+            f"Object trace: max {self.object_trace_count} snapshots, distance {self.object_trace_distance}m"
+        )
+
+    def _record_arm_trace(self):
         """
-        Record a trace snapshot if conditions are met.
+        Record arm trace snapshot based on EEF distance traveled.
 
-        Args:
-            sim_time: Current simulation time in seconds
+        Samples when the end effector has moved at least arm_trace_distance
+        from the last recorded position, ensuring even spatial distribution.
         """
-        # Stop recording after trace duration
-        if sim_time > self.trace_duration:
-            if not self.trace_recording_complete:
-                self.trace_recording_complete = True
-                print(f"Trace recording complete: {len(self.trace_snapshots)} snapshots captured")
+        # Stop if max trace count reached
+        if len(self.arm_trace_snapshots) >= self.arm_trace_count:
+            if not self.arm_trace_complete:
+                self.arm_trace_complete = True
+                print(f"Arm trace complete: {len(self.arm_trace_snapshots)} snapshots")
             return
 
-        # Check if it's time for a new snapshot
-        if sim_time - self.trace_last_sample_time >= self.trace_interval:
-            self.trace_snapshots.append(self.data.qpos.copy())
-            self.trace_timestamps.append(sim_time)
-            self.trace_last_sample_time = sim_time
+        # Get current EEF position
+        current_pos = self.data.xpos[self.eef_body_id].copy()
 
-    def _compute_trace_color(self, t):
+        # First snapshot: always record
+        if self.arm_trace_last_pos is None:
+            self.arm_trace_snapshots.append(self.data.qpos.copy())
+            self.arm_trace_last_pos = current_pos
+            return
+
+        # Check distance threshold
+        distance = np.linalg.norm(current_pos - self.arm_trace_last_pos)
+        if distance >= self.arm_trace_distance:
+            self.arm_trace_snapshots.append(self.data.qpos.copy())
+            self.arm_trace_last_pos = current_pos
+
+    def _record_object_trace(self):
         """
-        Compute RGBA color for a trace snapshot based on normalized time.
+        Record object trace snapshot based on object position distance traveled.
+
+        Samples when the object has moved at least object_trace_distance
+        from the last recorded position, ensuring even spatial distribution.
+        """
+        # Skip if no object
+        if self.object_body_id is None:
+            return
+
+        # Stop if max trace count reached
+        if len(self.object_trace_snapshots) >= self.object_trace_count:
+            if not self.object_trace_complete:
+                self.object_trace_complete = True
+                print(
+                    f"Object trace complete: {len(self.object_trace_snapshots)} snapshots"
+                )
+            return
+
+        # Get current object position
+        current_pos = self.data.xpos[self.object_body_id].copy()
+
+        # First snapshot: always record
+        if self.object_trace_last_pos is None:
+            self.object_trace_snapshots.append(self.data.qpos.copy())
+            self.object_trace_last_pos = current_pos
+            return
+
+        # Check distance threshold
+        distance = np.linalg.norm(current_pos - self.object_trace_last_pos)
+        if distance >= self.object_trace_distance:
+            self.object_trace_snapshots.append(self.data.qpos.copy())
+            self.object_trace_last_pos = current_pos
+
+    def _compute_arm_trace_color(self, t):
+        """
+        Compute RGBA color for an arm trace snapshot based on normalized time.
 
         Args:
             t: normalized time [0,1] where 0=oldest, 1=newest
@@ -285,11 +478,20 @@ class ReplayMotion(Mj_Env):
         """
         # Soft blue: RGB ~(0.4, 0.6, 0.9) at t=0
         # Soft green: RGB ~(0.4, 0.8, 0.5) at t=1
-        r = 0.4                      # Constant low red
-        g = 0.6 + 0.2 * t            # 0.6 → 0.8 (increasing green)
-        b = 0.9 - 0.4 * t            # 0.9 → 0.5 (decreasing blue)
+        r = 0.4  # Constant low red
+        g = 0.6 + 0.2 * t  # 0.6 → 0.8 (increasing green)
+        b = 0.9 - 0.4 * t  # 0.9 → 0.5 (decreasing blue)
         alpha = 0.1 + 0.1 * t  # Fading: 0.1 → 0.2
         return np.array([r, g, b, alpha], dtype=np.float32)
+
+    def _compute_object_trace_color(self):
+        """
+        Return solid orange color for object traces.
+
+        Returns:
+            np.ndarray: [R, G, B, A] in range [0, 1]
+        """
+        return np.array([1.0, 0.5, 0.0, 0.3], dtype=np.float32)
 
     def _add_ghost_geom_to_scene(self, scene, ghost_data, geom_id, rgba):
         """
@@ -306,59 +508,69 @@ class ReplayMotion(Mj_Env):
 
         geom_type = self.model.geom_type[geom_id]
 
+        # Use mjv_initGeom for all geometry types - it handles transformations correctly
+        mujoco.mjv_initGeom(
+            scene.geoms[scene.ngeom],
+            geom_type,
+            self.model.geom_size[geom_id],
+            ghost_data.geom_xpos[geom_id],
+            ghost_data.geom_xmat[geom_id],
+            rgba=rgba,
+        )
+
+        # For mesh geometries, set the mesh data reference
         if geom_type == mujoco.mjtGeom.mjGEOM_MESH:
-            # Manual mesh geometry setup
             g = scene.geoms[scene.ngeom]
-            g.type = geom_type
-            g.dataid = self.model.geom_dataid[geom_id]
-            g.objtype = mujoco.mjtObj.mjOBJ_MESH
-            g.objid = g.dataid
-            g.pos[:] = ghost_data.geom_xpos[geom_id]
-            g.mat[:, :] = ghost_data.geom_xmat[geom_id].reshape(3, 3)
-            g.size[:] = self.model.geom_size[geom_id]
-            g.rgba[:] = rgba
-            scene.ngeom += 1
-        else:
-            # Primitive geometries (sphere, box, capsule, cylinder)
-            mujoco.mjv_initGeom(
-                scene.geoms[scene.ngeom],
-                geom_type,
-                self.model.geom_size[geom_id],
-                ghost_data.geom_xpos[geom_id],
-                ghost_data.geom_xmat[geom_id],
-                rgba=rgba
-            )
-            scene.ngeom += 1
+            mesh_id = self.model.geom_dataid[geom_id]
+            # MuJoCo internally uses dataid*2 for mesh (vs convex hull)
+            g.dataid = mesh_id * 2
+            g.objtype = mujoco.mjtObj.mjOBJ_GEOM
+            g.objid = geom_id
+
+        scene.ngeom += 1
 
     def _render_trace_to_scene(self, scene):
         """
-        Render all trace ghost geometries to a scene.
+        Render arm and object trace ghost geometries to a scene.
 
         Args:
             scene: MjvScene to render ghosts to
         """
-        if len(self.trace_snapshots) == 0:
-            return
-
         scene.ngeom = 0  # Clear previous frame's ghosts
 
-        num_snapshots = len(self.trace_snapshots)
-
-        # Render each snapshot as ghost
-        for i, qpos in enumerate(self.trace_snapshots):
+        # Render arm traces (blue→green gradient)
+        num_arm = len(self.arm_trace_snapshots)
+        for i, qpos in enumerate(self.arm_trace_snapshots):
             # Create ghost data with this pose
             ghost_data = mujoco.MjData(self.model)
             ghost_data.qpos[:] = qpos
-            mujoco.mj_forward(self.model, ghost_data)
+            ghost_data.qvel[:] = 0  # Zero velocities for static pose
+            mujoco.mj_kinematics(self.model, ghost_data)  # Compute positions only
 
             # Time-based color and opacity
-            t = i / (num_snapshots - 1) if num_snapshots > 1 else 0.5
-            color = self._compute_trace_color(t)
+            t = i / (num_arm - 1) if num_arm > 1 else 0.5
+            color = self._compute_arm_trace_color(t)
 
-            # Render all geometries for all traced bodies
-            for body_id in self.trace_body_ids:
-                for geom_id in self.trace_geom_map.get(body_id, []):
+            # Render all geometries for arm bodies
+            for body_id in self.arm_trace_body_ids:
+                for geom_id in self.arm_trace_geom_map.get(body_id, []):
                     self._add_ghost_geom_to_scene(scene, ghost_data, geom_id, color)
+
+        # Render object traces (solid orange)
+        object_color = self._compute_object_trace_color()
+        for qpos in self.object_trace_snapshots:
+            # Create ghost data with this pose
+            ghost_data = mujoco.MjData(self.model)
+            ghost_data.qpos[:] = qpos
+            ghost_data.qvel[:] = 0  # Zero velocities for static pose
+            mujoco.mj_kinematics(self.model, ghost_data)  # Compute positions only
+
+            # Render all geometries for object bodies
+            for body_id in self.object_trace_body_ids:
+                for geom_id in self.object_trace_geom_map.get(body_id, []):
+                    self._add_ghost_geom_to_scene(
+                        scene, ghost_data, geom_id, object_color
+                    )
 
     def _set_object_pose(self, tf_matrix):
         """
@@ -382,28 +594,38 @@ class ReplayMotion(Mj_Env):
         if body_jntadr >= 0:
             qpos_addr = self.model.jnt_qposadr[body_jntadr]
             # Set position (3 DOF)
-            self.data.qpos[qpos_addr:qpos_addr + 3] = position
+            self.data.qpos[qpos_addr : qpos_addr + 3] = position
             # Set quaternion (4 DOF) in [w, x, y, z] format
-            self.data.qpos[qpos_addr + 3:qpos_addr + 7] = quat_wxyz
+            self.data.qpos[qpos_addr + 3 : qpos_addr + 7] = quat_wxyz
             # Zero out velocities to prevent physics interference
             vel_addr = self.model.jnt_dofadr[body_jntadr]
-            self.data.qvel[vel_addr:vel_addr + 6] = 0
+            self.data.qvel[vel_addr : vel_addr + 6] = 0
 
-    def _apply_joint_control(self, qpos_target, qvel_target=None):
+    def _apply_joint_control(self, qpos_target, qvel_target=None, gripper_value=None):
         """
         Apply joint control based on current control mode.
 
         Args:
             qpos_target: Target joint positions (7 values, radians)
             qvel_target: Target joint velocities (optional, for 'qpos' mode)
+            gripper_value: Gripper joint value (from gripper_history[0])
         """
         for i in range(7):
-            if self.ctrl_mode == 'ctrl':
+            if self.ctrl_mode == "ctrl":
                 self.data.ctrl[self.joint_ids[i]] = qpos_target[i]
-            elif self.ctrl_mode == 'qpos':
+            elif self.ctrl_mode == "qpos":
                 self.data.qpos[self.joint_ids[i]] = qpos_target[i]
                 if qvel_target is not None:
                     self.data.qvel[self.joint_ids[i]] = qvel_target[i]
+
+        # Apply gripper control via actuator (constraints will be solved by mj_forward)
+        if gripper_value is not None:
+            # Use recorded gripper value as driver joint position
+            # gripper_value is in range 0-0.8 (driver joint range)
+            # Convert to actuator control range (0-255)
+            driver_value = float(gripper_value)
+            ctrl_value = (driver_value / 0.8) * 255.0
+            self.data.ctrl[self.gripper_actuator_id] = ctrl_value
 
     def _init_video_recording(self):
         """Initialize video recording if enabled."""
@@ -414,7 +636,9 @@ class ReplayMotion(Mj_Env):
         if self.output_path is None:
             if self.data_path:
                 base_name = os.path.splitext(os.path.basename(self.data_path))[0]
-                self.output_path = os.path.join(os.path.dirname(self.data_path), f"{base_name}_replay.mp4")
+                self.output_path = os.path.join(
+                    os.path.dirname(self.data_path), f"{base_name}_replay.mp4"
+                )
             else:
                 self.output_path = "replay_output.mp4"
 
@@ -423,24 +647,30 @@ class ReplayMotion(Mj_Env):
         self.model.vis.global_.offheight = self.video_height
 
         # Create video renderer
-        self.video_renderer = mujoco.Renderer(self.model, height=self.video_height, width=self.video_width)
+        self.video_renderer = mujoco.Renderer(
+            self.model, height=self.video_height, width=self.video_width
+        )
 
         # Create camera for video recording using the same default settings
         self.video_camera = mujoco.MjvCamera()
-        self.video_camera.lookat[:] = self.default_camera_params['lookat']
-        self.video_camera.distance = self.default_camera_params['distance']
-        self.video_camera.azimuth = self.default_camera_params['azimuth']
-        self.video_camera.elevation = self.default_camera_params['elevation']
+        self.video_camera.lookat[:] = self.default_camera_params["lookat"]
+        self.video_camera.distance = self.default_camera_params["distance"]
+        self.video_camera.azimuth = self.default_camera_params["azimuth"]
+        self.video_camera.elevation = self.default_camera_params["elevation"]
 
         # Create video writer
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
         self.video_writer = cv2.VideoWriter(
-            self.output_path, fourcc, self.video_fps,
-            (self.video_width, self.video_height)
+            self.output_path,
+            fourcc,
+            self.video_fps,
+            (self.video_width, self.video_height),
         )
 
         print(f"Video recording enabled: {self.output_path}")
-        print(f"Video settings: {self.video_width}x{self.video_height} @ {self.video_fps} fps")
+        print(
+            f"Video settings: {self.video_width}x{self.video_height} @ {self.video_fps} fps"
+        )
 
     def _record_frame(self):
         """Capture and write a frame to the video."""
@@ -468,12 +698,12 @@ class ReplayMotion(Mj_Env):
 
     def replay(self):
         """Main replay loop - iterates through recorded timesteps and visualizes."""
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Starting motion replay")
         print(f"Control mode: {self.ctrl_mode}")
         print(f"Speed factor: {self.speed_factor}x")
         print(f"Total timesteps: {self.num_timesteps}")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         # Initialize motion trace
         self._init_replay_trace()
@@ -499,23 +729,27 @@ class ReplayMotion(Mj_Env):
                 episode = self.episodes[current_timestep]
 
                 # Extract data for this timestep
-                qpos_target = np.array(episode['qpos'])
-                qvel_target = np.array(episode['qvel'])
-                center_tf = episode['center_history']
+                qpos_target = np.array(episode["qpos"])
+                qvel_target = np.array(episode["qvel"])
+                center_tf = episode["center_history"]
+                gripper_value = episode.get("gripper_history", [None])[0]
 
-                # Apply robot joint control
-                self._apply_joint_control(qpos_target, qvel_target)
+                # Apply robot joint control (including gripper)
+                self._apply_joint_control(qpos_target, qvel_target, gripper_value)
 
                 # Set object pose from recorded transformation matrix
                 self._set_object_pose(center_tf)
 
-                # Use mj_forward() instead of mj_step() to update kinematics without physics
-                # This ensures the object follows the recorded trajectory exactly
-                mujoco.mj_forward(self.model, self.data)
+                # Use mj_step() to solve gripper constraints properly
+                # The arm qpos and object qpos are reset each frame, so physics won't accumulate
+                mujoco.mj_step(self.model, self.data)
 
-                # Record trace snapshot (only during first trace_duration seconds)
+                # Record arm and object trace snapshots based on distance traveled
+                # Only start recording after the delay period
                 sim_time = current_timestep * self.dt
-                self._record_trace_snapshot(sim_time)
+                if sim_time >= self.trace_start_delay:
+                    self._record_arm_trace()
+                    self._record_object_trace()
 
                 # Render trace ghosts to interactive viewer
                 if self.viewer is not None:
@@ -530,8 +764,10 @@ class ReplayMotion(Mj_Env):
                 if current_timestep % 500 == 0:
                     sim_time = current_timestep * self.dt
                     real_time = time.time() - replay_start_time
-                    print(f"Timestep {current_timestep}/{self.num_timesteps} "
-                          f"(sim: {sim_time:.2f}s, real: {real_time:.2f}s)")
+                    print(
+                        f"Timestep {current_timestep}/{self.num_timesteps} "
+                        f"(sim: {sim_time:.2f}s, real: {real_time:.2f}s)"
+                    )
 
                 # Timing control for playback speed
                 if base_delay > 0:
@@ -553,13 +789,13 @@ class ReplayMotion(Mj_Env):
 
         # Replay complete
         total_time = time.time() - replay_start_time
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Replay complete!")
         print(f"Total timesteps: {current_timestep}")
         print(f"Simulation time: {current_timestep * self.dt:.2f}s")
         print(f"Real time: {total_time:.2f}s")
         print(f"Effective speed: {(current_timestep * self.dt) / total_time:.2f}x")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
 
         # Keep viewer open after replay (unless saving video)
         if not self.save_video:
@@ -584,31 +820,93 @@ def main():
     """Main entry point with command-line argument parsing."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Replay recorded robot motion')
-    parser.add_argument('--scene', type=str,
-                        default=os.path.join(cpath, 'Environments', 'xarm7_tossing_gripper_xml', 'tossing.xml'),
-                        help='Path to MuJoCo scene XML file')
-    parser.add_argument('--data', type=str,
-                        default=os.path.join(cpath, '..', '..', '..', 'data', 'demo', 'data_save5.json'),
-                        help='Path to recorded motion data JSON file')
-    parser.add_argument('--ctrl-mode', type=str, choices=['qpos', 'ctrl'], default='qpos',
-                        help='Control mode: qpos (direct position) or ctrl (control signal)')
-    parser.add_argument('--speed', type=float, default=1.0,
-                        help='Playback speed factor (1.0 = real-time)')
-    parser.add_argument('--save-video', action='store_true',
-                        help='Save replay as video file')
-    parser.add_argument('--output', type=str, default=None,
-                        help='Output video file path (default: auto-generated)')
-    parser.add_argument('--video-fps', type=int, default=50,
-                        help='Video frames per second (default: 50)')
-    parser.add_argument('--video-width', type=int, default=1920,
-                        help='Video width in pixels (default: 1920)')
-    parser.add_argument('--video-height', type=int, default=1080,
-                        help='Video height in pixels (default: 1080)')
-    parser.add_argument('--trace-duration', type=float, default=1.0,
-                        help='Duration to record motion traces in seconds (default: 1.0)')
-    parser.add_argument('--trace-count', type=int, default=10,
-                        help='Number of trace snapshots to capture (default: 10)')
+    parser = argparse.ArgumentParser(description="Replay recorded robot motion")
+    parser.add_argument(
+        "--scene",
+        type=str,
+        default=os.path.join(
+            cpath, "Environments", "xarm7_tossing_gripper_xml", "tossing.xml"
+        ),
+        help="Path to MuJoCo scene XML file",
+    )
+    parser.add_argument(
+        "--data",
+        type=str,
+        default=os.path.join(
+            cpath, "..", "..", "..", "data", "demo", "data_save5.json"
+        ),
+        help="Path to recorded motion data JSON file",
+    )
+    parser.add_argument(
+        "--ctrl-mode",
+        type=str,
+        choices=["qpos", "ctrl"],
+        default="qpos",
+        help="Control mode: qpos (direct position) or ctrl (control signal)",
+    )
+    parser.add_argument(
+        "--speed",
+        type=float,
+        default=1.0,
+        help="Playback speed factor (1.0 = real-time)",
+    )
+    parser.add_argument(
+        "--save-video", action="store_true", help="Save replay as video file"
+    )
+    parser.add_argument(
+        "--output",
+        type=str,
+        default=None,
+        help="Output video file path (default: auto-generated)",
+    )
+    parser.add_argument(
+        "--video-fps",
+        type=int,
+        default=50,
+        help="Video frames per second (default: 50)",
+    )
+    parser.add_argument(
+        "--video-width",
+        type=int,
+        default=1920,
+        help="Video width in pixels (default: 1920)",
+    )
+    parser.add_argument(
+        "--video-height",
+        type=int,
+        default=1080,
+        help="Video height in pixels (default: 1080)",
+    )
+    parser.add_argument(
+        "--arm-trace-distance",
+        type=float,
+        default=0.05,
+        help="Min EEF distance in meters between arm traces (default: 0.05)",
+    )
+    parser.add_argument(
+        "--arm-trace-count",
+        type=int,
+        default=10,
+        help="Max arm trace snapshots (default: 10)",
+    )
+    parser.add_argument(
+        "--object-trace-distance",
+        type=float,
+        default=0.05,
+        help="Min object distance in meters between object traces (default: 0.05)",
+    )
+    parser.add_argument(
+        "--object-trace-count",
+        type=int,
+        default=10,
+        help="Max object trace snapshots (default: 10)",
+    )
+    parser.add_argument(
+        "--trace-start-delay",
+        type=float,
+        default=0.0,
+        help="Time in seconds to wait before starting trace recording (default: 0.0)",
+    )
 
     args = parser.parse_args()
 
@@ -623,8 +921,11 @@ def main():
         video_fps=args.video_fps,
         video_width=args.video_width,
         video_height=args.video_height,
-        trace_duration=args.trace_duration,
-        trace_count=args.trace_count,
+        arm_trace_distance=args.arm_trace_distance,
+        arm_trace_count=args.arm_trace_count,
+        object_trace_distance=args.object_trace_distance,
+        object_trace_count=args.object_trace_count,
+        trace_start_delay=args.trace_start_delay,
     )
 
     # Start replay
