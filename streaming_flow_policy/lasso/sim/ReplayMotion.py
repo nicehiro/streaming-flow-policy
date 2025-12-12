@@ -43,6 +43,10 @@ class ReplayMotion(Mj_Env):
         object_trace_distance=0.05,
         object_trace_count=10,
         trace_start_delay=0.0,
+        camera_lookat=None,
+        camera_distance=None,
+        camera_azimuth=None,
+        camera_elevation=None,
     ):
         """
         Initialize the ReplayMotion environment.
@@ -62,6 +66,10 @@ class ReplayMotion(Mj_Env):
             object_trace_distance: Min object distance in meters between object traces (default: 0.05)
             object_trace_count: Max object trace snapshots (default: 10)
             trace_start_delay: Time in seconds to wait before starting trace recording (default: 0.0)
+            camera_lookat: Camera lookat point [x, y, z] (default: [-1, 1, 0.6])
+            camera_distance: Camera distance from lookat point (default: 3.3)
+            camera_azimuth: Camera azimuth angle in degrees (default: 130)
+            camera_elevation: Camera elevation angle in degrees (default: -30)
         """
         # Store save_video before calling super().__init__ so _set_viewer can access it
         self.save_video = save_video
@@ -78,6 +86,12 @@ class ReplayMotion(Mj_Env):
         self.video_writer = None
         self.video_renderer = None
         self.video_camera = None
+
+        # Camera settings (None = use defaults)
+        self.camera_lookat = camera_lookat
+        self.camera_distance = camera_distance
+        self.camera_azimuth = camera_azimuth
+        self.camera_elevation = camera_elevation
 
         # Arm trace configuration (EEF-based, space-based sampling)
         self.arm_trace_distance = arm_trace_distance
@@ -223,12 +237,12 @@ class ReplayMotion(Mj_Env):
 
     def _set_default_camera(self):
         """Set default camera settings for both interactive viewer and video recording."""
-        # Default camera settings to capture full experiment (robot arm + target column)
+        # Camera settings: use provided values or fall back to defaults
         self.default_camera_params = {
-            "lookat": np.array([-1, 1, 0.6]),
-            "distance": 3.3,
-            "azimuth": 130,
-            "elevation": -30,
+            "lookat": np.array(self.camera_lookat) if self.camera_lookat is not None else np.array([-1, 1, 0.6]),
+            "distance": self.camera_distance if self.camera_distance is not None else 3.3,
+            "azimuth": self.camera_azimuth if self.camera_azimuth is not None else 130,
+            "elevation": self.camera_elevation if self.camera_elevation is not None else -30,
         }
 
         # Apply to interactive viewer
@@ -907,6 +921,32 @@ def main():
         default=0.0,
         help="Time in seconds to wait before starting trace recording (default: 0.0)",
     )
+    parser.add_argument(
+        "--cam-lookat",
+        type=float,
+        nargs=3,
+        default=None,
+        metavar=("X", "Y", "Z"),
+        help="Camera lookat point [x, y, z] (default: -1, 1, 0.6)",
+    )
+    parser.add_argument(
+        "--cam-distance",
+        type=float,
+        default=None,
+        help="Camera distance from lookat point (default: 3.3)",
+    )
+    parser.add_argument(
+        "--cam-azimuth",
+        type=float,
+        default=None,
+        help="Camera azimuth angle in degrees (default: 130)",
+    )
+    parser.add_argument(
+        "--cam-elevation",
+        type=float,
+        default=None,
+        help="Camera elevation angle in degrees (default: -30)",
+    )
 
     args = parser.parse_args()
 
@@ -926,6 +966,10 @@ def main():
         object_trace_distance=args.object_trace_distance,
         object_trace_count=args.object_trace_count,
         trace_start_delay=args.trace_start_delay,
+        camera_lookat=args.cam_lookat,
+        camera_distance=args.cam_distance,
+        camera_azimuth=args.cam_azimuth,
+        camera_elevation=args.cam_elevation,
     )
 
     # Start replay
