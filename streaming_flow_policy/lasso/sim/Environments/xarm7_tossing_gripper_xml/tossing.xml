@@ -5,7 +5,13 @@
   <visual>
     <rgba fog="1 1 1 1"/>
     <global offwidth="1920" offheight="1080"/>
+    <headlight ambient="0.4 0.4 0.4" diffuse="0.4 0.4 0.4" specular="0.1 0.1 0.1"/>
   </visual>
+
+  <statistic meansize="0.05"/>
+  <asset>
+    <texture name="skybox" type="skybox" builtin="flat" rgb1="1 1 1" rgb2="1 1 1" width="512" height="512"/>
+  </asset>
 
 
   <asset>
